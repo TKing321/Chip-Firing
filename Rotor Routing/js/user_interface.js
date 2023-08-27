@@ -162,54 +162,78 @@ function init_ui() {
     menubar.style.left = '0px';
     document.body.appendChild( menubar );
 
-    add_button(menubar, "Vertex", function() {
-        cursor = 0;
-    });
-    add_button(menubar, "Edge", function () {
-        cursor = 1;
-    })
-    add_button(menubar, "Sink", function () {
-        cursor = 2;
-    })
-    add_button(menubar, "Chip", function () {
-        cursor = 4;
-    })
-    add_button(menubar, "Tree", function () {
-        cursor = 3;
-        if (!tree_active) {
-            add_button(menubar, "Confirm", function () {
-                if (tree.length !== vertices.length - 1)
-                    return
-                let es = new Set();
-                tree.forEach(e => {
-                    es.add(e.v_1);
-                    es.add(e.v_2);
-                });
-                if (vertices.length !== es.size || !sink)
-                    return
-                add_button(menubar, "Rotor Route", route)
-                for (let i = 0; i < menubar.children.length; i++) {
-                    if (menubar.children[i].textContent === "Confirm") {
-                        menubar.removeChild(menubar.children[i])
-                    }
-                }
-            })
+    add_button(menubar, "Next",() => {
+        if (cursor === 3) {
+            if (tree.length !== vertices.length - 1)
+                return
+            let es = new Set();
+            tree.forEach(e => {
+                es.add(e.v_1);
+                es.add(e.v_2);
+            });
+            if (vertices.length !== es.size || !sink)
+                return
         }
-        tree_active = true;
-    })
+        cursor += 1;
+        window.removeEventListener('mousedown', onMouseDown);
+        modals[cursor + 1].classList.add("open");
+    });
+
+    // add_button(menubar, "Vertex", function() {
+    //     cursor = 0;
+    // });
+    // add_button(menubar, "Edge", function () {
+    //     cursor = 1;
+    // })
+    // add_button(menubar, "Sink", function () {
+    //     cursor = 2;
+    // })
+    // add_button(menubar, "Chip", function () {
+    //     cursor = 4;
+    // })
+    // add_button(menubar, "Tree", function () {
+    //     cursor = 3;
+    //     if (!tree_active) {
+    //         add_button(menubar, "Confirm", function () {
+    //             if (tree.length !== vertices.length - 1)
+    //                 return
+    //             let es = new Set();
+    //             tree.forEach(e => {
+    //                 es.add(e.v_1);
+    //                 es.add(e.v_2);
+    //             });
+    //             if (vertices.length !== es.size || !sink)
+    //                 return
+    //             add_button(menubar, "Rotor Route", route)
+    //             for (let i = 0; i < menubar.children.length; i++) {
+    //                 if (menubar.children[i].textContent === "Confirm") {
+    //                     menubar.removeChild(menubar.children[i])
+    //                 }
+    //             }
+    //         })
+    //     }
+    //     tree_active = true;
+    // })
 }
 
 function route() {
-    vertices.forEach(v => {v.orderCycord()})
+    vertices.forEach(v => {
+        v.orderCycord()
+    })
     setRotors();
     renderer.render(scene, camera);
     rotorRouting();
-
 }
 
 function animate() {
-    if (t < total_frames-1)
+    if (t < total_frames-1) {
         requestAnimationFrame(animate);
+    }
+    else {
+        setTimeout(() => {
+            modals[7].classList.add("open")
+        }, 5000);
+    }
 
     let chip_index = 0;
     let temp = t - f_per_op - (firings[0] * f_per_op * 2);

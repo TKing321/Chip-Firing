@@ -8,10 +8,85 @@
     <script src="js/user_interface.js"></script>
 </head>
 <body>
-  <script src="lib/three.js"></script>
-  <script src="lib/THREE.MeshLine.js"></script>
-  <script src="js/ArrowCustom.js"></script>
-  <script src="js/trial.js"></script>
-  <script src="js/user_interface.js"></script>
+    <div class="modal" id="modal">
+        <div class="modal-inner">
+            <h2>Welcome</h2>
+            <p>
+                This is an interactive demo of the rotor-routing process. Follow the prompts to build a graph and spanning tree.
+            </p>
+            <button id="closeModal">Continue</button>
+        </div>
+    </div>
+    <div class="modal" id="modal2">
+        <div class="modal-inner">
+            <h2>Vertices</h2>
+            <p>
+                Click anywhere on the page to place a vertex. When you are done, click next.
+            </p>
+            <button id="closeModal2">Close</button>
+        </div>
+    </div>
+    <div class="modal" id="modal3">
+        <div class="modal-inner">
+            <h2>Edges</h2>
+            <p>
+                Click on two vertices to make an edge between them. Make sure your graph is connected. When you are done, click next.
+            </p>
+            <button id="closeModal3">Close</button>
+        </div>
+    </div>
+    <div class="modal" id="modal4">
+        <div class="modal-inner">
+            <h2>Sink</h2>
+            <p>
+                Select a single vertex to be the sink. When you are done, click next.
+            </p>
+            <button id="closeModal4">Close</button>
+        </div>
+    </div>
+    <div class="modal" id="modal5">
+        <div class="modal-inner">
+            <h2>Tree</h2>
+            <p>
+                Select edges to form a spanning tree. When you are done, click next.
+            </p>
+            <button id="closeModal5">Close</button>
+        </div>
+    </div>
+    <div class="modal" id="modal6">
+        <div class="modal-inner">
+            <h2>Chips</h2>
+            <p>
+                Add chips to the graph. When you are done, click next.
+            </p>
+            <button id="closeModal6">Close</button>
+        </div>
+    </div>
+    <div class="modal" id="modal7">
+        <div class="modal-inner">
+            <h2>Rotor-Route</h2>
+            <p>
+                To start the rotor-routing process, click start.
+            </p>
+            <button id="closeModal7">Start</button>
+        </div>
+    </div>
+    <div class="modal" id="modal8">
+        <div class="modal-inner">
+            <h2>Thank You</h2>
+            <p>
+                Thank you for using my program. You can return to a specific step in the process using the buttons below.
+            </p>
+            <button id="closeModal8">New Graph</button>
+            <button id="closeModal9">New Tree</button>
+            <button id="closeModal10">New Config</button>
+        </div>
+    </div>
+    <script src="lib/three.js"></script>
+    <script src="lib/THREE.MeshLine.js"></script>
+    <script src="js/ArrowCustom.js"></script>
+    <script src="js/trial.js"></script>
+    <script src="js/user_interface.js"></script>
+
 </body>
 </html>

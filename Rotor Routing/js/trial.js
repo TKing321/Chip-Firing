@@ -92,26 +92,40 @@ class Chip {
 
 
 // Variables to keep track of
-const vertices = [];
-const edges = [];
-let tree_active = false;
-let cursor = 0;
+let vertices;
+let edges;
+let cursor;
 let edge1;
-let edge_index = 0;
-let sink = false;
-const tree = [];
-const arrows = [];
-const cverts = [];
-const chips = [];
+let edge_index;
+let sink;
+let tree;
+let arrows;
+let cverts;
+let chips = [];
 let sink_vertex;
 
+function init_var() {
+    vertices = [];
+    edges = [];
+    cursor = 0;
+    edge_index = 0;
+    sink = false;
+    tree = [];
+    arrows = [];
+    cverts = [];
+    chips = [];
+    t = 0;
+}
+
 const f_per_op = 30;
-let t = 0;
+let t;
 let firings;
 let total_operations;
 let total_frames;
 let oldv;
 let newv;
+
+init_var()
 
 
 // Helper Function
@@ -127,23 +141,145 @@ function getCenterPoint(mesh) {
 
 // Variables to make viewing work
 init_ui();
-const renderer = new THREE.WebGLRenderer();
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-const scene = new THREE.Scene();
+let renderer;
+let camera;
+let scene;
 
+renderer = new THREE.WebGLRenderer();
+camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+scene = new THREE.Scene();
 
-// Variables ot make clicking work
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement)
+camera.position.set(0, 0 , 100);
+camera.lookAt( 0, 0, 0);
+
+// Variables to make clicking work
 const mouse = new THREE.Vector2();
 const intersectionPoint = new THREE.Vector3();
 const planeNormal = new THREE.Vector3();
 const plane = new THREE.Plane();
 const raycaster = new THREE.Raycaster();
 
+// Code for the initial pop-up window
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement)
-camera.position.set(0, 0 , 100);
-camera.lookAt( 0, 0, 0);
+modals = {
+    0: document.getElementById("modal"),
+    1: document.getElementById("modal2"),
+    2: document.getElementById("modal3"),
+    3: document.getElementById("modal4"),
+    4: document.getElementById("modal5"),
+    5: document.getElementById("modal6"),
+    6: document.getElementById("modal7"),
+    7: document.getElementById("modal8"),
+}
+
+closeBtns = {
+    0: document.getElementById("closeModal"),
+    1: document.getElementById("closeModal2"),
+    2: document.getElementById("closeModal3"),
+    3: document.getElementById("closeModal4"),
+    4: document.getElementById("closeModal5"),
+    5: document.getElementById("closeModal6"),
+    6: document.getElementById("closeModal7"),
+    7: document.getElementById("closeModal8"),
+    8: document.getElementById("closeModal9"),
+    9: document.getElementById("closeModal10"),
+}
+
+modals[0].classList.add("open");
+
+function removeObject3D(id) {
+    let object3D = scene.getObjectByProperty("uuid", id);
+
+    if (!(object3D instanceof THREE.Object3D)) return false;
+
+    // for better memory management and performance
+    if (object3D.geometry) object3D.geometry.dispose();
+
+    if (object3D.material) {
+        if (object3D.material instanceof Array) {
+            // for better memory management and performance
+            object3D.material.forEach(material => material.dispose());
+        } else {
+            // for better memory management and performance
+            object3D.material.dispose();
+        }
+    }
+    object3D.removeFromParent(); // the parent might be the scene or another Object3D, but it is sure to be removed this way
+    return true;
+}
+
+Object.keys(closeBtns).forEach((i) => {
+    switch (i) {
+        case "0":
+            closeBtns[i].addEventListener("click", () => {
+                modals[i].classList.remove("open");
+                // window.addEventListener('mousedown', onMouseDown)
+                modals[1].classList.add("open");
+            });
+            break;
+        case "6":
+            closeBtns[i].addEventListener("click", () => {
+                modals[i].classList.remove("open");
+                route()
+            });
+            break;
+        case "7":
+            closeBtns[i].addEventListener("click", () => {
+                while (scene.children.length > 0) {
+                    scene.remove(scene.children[0]);
+                }
+                renderer.render(scene, camera);
+                modals[7].classList.remove("open");
+                init_var();
+                modals[0].classList.add("open");
+            });
+            break;
+        case "8":
+            closeBtns[i].addEventListener("click", () => {
+                arrows.forEach( (arrow) => {
+                    removeObject3D(arrow);
+                });
+                chips.forEach( (chip) => {
+                    removeObject3D(chip.id);
+                });
+                renderer.render(scene, camera);
+                modals[7].classList.remove("open");
+                tree = [];
+                arrows = [];
+                cverts = [];
+                chips = [];
+                t = 0;
+                cursor = 3;
+                modals[4].classList.add("open");
+            });
+            break;
+        case "9":
+            closeBtns[i].addEventListener("click", () => {
+                arrows.forEach( (arrow) => {
+                    removeObject3D(arrow);
+                });
+                chips.forEach( (chip) => {
+                    removeObject3D(chip.id);
+                });
+                renderer.render(scene, camera);
+                modals[7].classList.remove("open");
+                cverts = [];
+                chips = [];
+                t = 0;
+                cursor = 4;
+                modals[5].classList.add("open")
+            });
+            break;
+        default:
+            closeBtns[i].addEventListener("click", () => {
+                modals[i].classList.remove("open");
+                window.addEventListener('mousedown', onMouseDown)
+            });
+            break;
+    }
+});
 
 
 function onMouseDown(event) {
@@ -357,7 +493,10 @@ function addChip() {
         if (object.uuid === v.id) {
             vertex = v;
         }
-    })
+    });
+
+    if (typeof vertex === "undefined")
+        return
 
     if (mouse.y > 0.9)
         return
@@ -366,11 +505,12 @@ function addChip() {
         new THREE.CircleGeometry(.75, 360),
         new THREE.MeshBasicMaterial({color: 0x98ff98})
     );
-    scene.add(sphereMesh);
+
+
     sphereMesh.position.copy(vertex.mesh.position);
 
     chips.push(new Chip(vertex, sphereMesh));
     cverts.push(vertex);
-}
 
-window.addEventListener('mousedown', onMouseDown)
+    scene.add(sphereMesh);
+}
